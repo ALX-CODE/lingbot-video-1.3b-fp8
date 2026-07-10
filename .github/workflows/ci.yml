@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.11"
           cache: pip
@@ -48,17 +48,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out validated ComfyUI revision
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Comfy-Org/ComfyUI
           ref: b910f4fa2ae3c816ca29bb99f8ebc5baee3387ae
           path: ComfyUI
       - name: Check out custom node in ComfyUI layout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           path: ComfyUI/custom_nodes/ComfyUI-LingBotVideo
       - name: Set up Python
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.11"
           cache: pip
@@ -69,9 +69,34 @@ jobs:
         shell: bash
         run: |
           python -m pip install --disable-pip-version-check --upgrade pip
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+          # Install the three ABI-coupled PyTorch packages from the same CPU
+          # index before ComfyUI requirements are resolved. Otherwise PyPI can
+          # supply a mismatched torchaudio wheel that fails at import time.
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision torchaudio
           python -m pip install -r ComfyUI/requirements.txt
           python -m pip install -r ComfyUI/custom_nodes/ComfyUI-LingBotVideo/requirements.txt
       - name: Run custom-node tests in ComfyUI layout
         working-directory: ComfyUI/custom_nodes/ComfyUI-LingBotVideo
-        run: python -m unittest discover -s tests -v
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import sys
+          import unittest
+
+          # Direct ComfyUI imports disable argument parsing by default. Enable
+          # the normal parser before test discovery, then select CPU explicitly
+          # because GitHub's runner intentionally installs CPU-only PyTorch.
+          comfy_root = pathlib.Path(
+              os.environ.get("COMFYUI_ROOT", pathlib.Path.cwd().parents[1])
+          )
+          sys.path.insert(0, str(comfy_root))
+          sys.argv = [sys.argv[0], "--cpu"]
+          import comfy.options
+
+          comfy.options.enable_args_parsing()
+          suite = unittest.defaultTestLoader.discover("tests")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
