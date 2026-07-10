@@ -50,6 +50,64 @@ _PROMPT_REWRITE_CACHE: OrderedDict[str, tuple[str, str]] = OrderedDict()
 _PROMPT_REWRITE_CACHE_LOCK = threading.Lock()
 
 
+def _preflight_fp8_runtime(device: torch.device) -> None:
+    """Fail early when the selected CUDA runtime cannot execute LingBot FP8 GEMMs."""
+    if device.type != "cuda":
+        raise RuntimeError(
+            f"LingBot FP8 requires a CUDA device; ComfyUI selected {device}. "
+            "Select the BF16 'transformer' checkpoint for a non-FP8 fallback."
+        )
+    if not hasattr(torch, "float8_e4m3fn"):
+        raise RuntimeError(
+            "This PyTorch build does not provide torch.float8_e4m3fn. "
+            "Install an FP8-capable CUDA PyTorch build or select the BF16 'transformer' checkpoint."
+        )
+    scaled_mm = getattr(torch, "_scaled_mm", None)
+    if not callable(scaled_mm):
+        raise RuntimeError(
+            "This PyTorch build does not provide the FP8 torch._scaled_mm kernel required by LingBot. "
+            "Install an FP8-capable CUDA PyTorch build or select the BF16 'transformer' checkpoint."
+        )
+
+    try:
+        capability = torch.cuda.get_device_capability(device)
+        device_name = torch.cuda.get_device_name(device)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Could not inspect CUDA capability for {device}: {exc}. "
+            "Select the BF16 'transformer' checkpoint if this GPU does not support FP8."
+        ) from exc
+
+    try:
+        # Match the checkpoint's E4M3 x E4M3 -> BF16 path with a tiny aligned GEMM.
+        lhs = torch.zeros((16, 16), device=device, dtype=torch.float8_e4m3fn)
+        # cuBLAS expects the weight operand in the same transposed/column-major
+        # layout used by _fp8_scaled_linear; a contiguous RHS can report a false
+        # CUBLAS_STATUS_NOT_SUPPORTED even on a working Blackwell runtime.
+        rhs = torch.zeros((16, 16), device=device, dtype=torch.float8_e4m3fn).t()
+        lhs_scale = torch.ones(1, device=device, dtype=torch.float32)
+        rhs_scale = torch.ones(1, device=device, dtype=torch.float32)
+        result = scaled_mm(
+            lhs,
+            rhs,
+            lhs_scale,
+            rhs_scale,
+            out_dtype=torch.bfloat16,
+            use_fast_accum=True,
+        )
+        if result.shape != (16, 16) or result.dtype != torch.bfloat16:
+            raise RuntimeError(
+                f"unexpected FP8 probe result: shape={tuple(result.shape)}, dtype={result.dtype}"
+            )
+        torch.cuda.synchronize(device)
+    except Exception as exc:
+        raise RuntimeError(
+            f"LingBot FP8 is unavailable on {device_name} (CUDA capability "
+            f"{capability[0]}.{capability[1]}, PyTorch {torch.__version__}, "
+            f"CUDA {torch.version.cuda}): {exc}. Select the BF16 'transformer' checkpoint instead."
+        ) from exc
+
+
 def _format_duration(seconds: float) -> str:
     seconds = max(0, round(seconds))
     minutes, seconds = divmod(seconds, 60)
@@ -603,15 +661,13 @@ class LingBotModelLoader:
                     [
                         "transformer_fp8_dense",
                         "transformer",
-                        "transformer_int8_dense",
-                        "transformer_int8",
                     ],
                 ),
                 "group_offload": (
                     "BOOLEAN",
                     {
                         "default": False,
-                        "tooltip": "Leave off for dense 1.3B (BF16 or INT8); forced on only for INT8 MoE.",
+                        "tooltip": "Leave off for the dense 1.3B FP8 or BF16 transformer.",
                     },
                 ),
             },
@@ -670,10 +726,14 @@ class LingBotModelLoader:
         if is_moe_int8 and not group_offload:
             print("[LingBot] group_offload was disabled but is mandatory for INT8 MoE; forcing it on.")
 
-        _free_comfy_models()
         device = torch.device(mm.get_torch_device())
         if device.type != "cuda":
             raise RuntimeError(f"LingBot Video requires CUDA on this machine; ComfyUI selected {device}")
+        if is_dense_fp8:
+            _send_progress_text(unique_id, "Stage 1/5 · Load Model\nFP8 runtime preflight")
+            _preflight_fp8_runtime(device)
+
+        _free_comfy_models()
 
         load_dtype = _transformer_load_dtype(is_quantized)
         print(
@@ -798,7 +858,6 @@ class LingBotTextEncode:
             _send_progress_text(unique_id, "Stage 2/5 · Encode Prompt\nPhase 2/4 · Loading Qwen3VL")
             processor = Qwen3VLProcessor.from_pretrained(
                 str(processor_path),
-                trust_remote_code=True,
                 local_files_only=True,
             )
             text_encoder = Qwen3VLForConditionalGeneration.from_pretrained(
@@ -806,7 +865,6 @@ class LingBotTextEncode:
                 dtype=torch.bfloat16,
                 attn_implementation="sdpa",
                 low_cpu_mem_usage=True,
-                trust_remote_code=True,
                 local_files_only=True,
             ).eval()
             text_encoder.config.use_cache = False
@@ -1113,7 +1171,6 @@ class LingBotPromptEncode:
             _send_progress_text(unique_id, "Stage 2/5 · Prompt + Qwen\nPhase 2/7 · Loading Qwen3VL once")
             processor = Qwen3VLProcessor.from_pretrained(
                 str(processor_path),
-                trust_remote_code=True,
                 local_files_only=True,
             )
             text_encoder = Qwen3VLForConditionalGeneration.from_pretrained(
@@ -1121,7 +1178,6 @@ class LingBotPromptEncode:
                 dtype=torch.bfloat16,
                 attn_implementation="sdpa",
                 low_cpu_mem_usage=True,
-                trust_remote_code=True,
                 local_files_only=True,
             ).eval()
             text_encoder.to(model.device)

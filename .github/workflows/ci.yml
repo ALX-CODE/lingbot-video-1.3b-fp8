@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  metadata-and-static:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install metadata validators
+        run: python -m pip install --disable-pip-version-check cffconvert==2.0.0
+      - name: Validate citation metadata
+        run: cffconvert --validate
+      - name: Validate Python, TOML, JSON, and standalone workflow tests
+        shell: bash
+        run: |
+          python -m compileall -q __init__.py nodes.py lingbot_video tools tests
+          python - <<'PY'
+          import json
+          import pathlib
+          import tomllib
+
+          root = pathlib.Path(".")
+          tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
+          for path in root.rglob("*.json"):
+              json.loads(path.read_text(encoding="utf-8"))
+          PY
+          python -m unittest discover -s tests -p 'test_public_workflows.py' -v
+
+  comfy-integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out validated ComfyUI revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Comfy-Org/ComfyUI
+          ref: b910f4fa2ae3c816ca29bb99f8ebc5baee3387ae
+          path: ComfyUI
+      - name: Check out custom node in ComfyUI layout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: ComfyUI/custom_nodes/ComfyUI-LingBotVideo
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            ComfyUI/requirements.txt
+            ComfyUI/custom_nodes/ComfyUI-LingBotVideo/requirements.txt
+      - name: Install CPU test dependencies
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
+          python -m pip install -r ComfyUI/requirements.txt
+          python -m pip install -r ComfyUI/custom_nodes/ComfyUI-LingBotVideo/requirements.txt
+      - name: Run custom-node tests in ComfyUI layout
+        working-directory: ComfyUI/custom_nodes/ComfyUI-LingBotVideo
+        run: python -m unittest discover -s tests -v

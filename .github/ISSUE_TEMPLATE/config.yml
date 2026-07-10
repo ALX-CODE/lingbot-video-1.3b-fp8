@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/security/advisories/new
+    about: Report vulnerabilities privately; do not include sensitive details in a public issue.
+  - name: Support guide
+    url: https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/blob/main/SUPPORT.md
+    about: Check supported scope and the diagnostics required for useful reports.

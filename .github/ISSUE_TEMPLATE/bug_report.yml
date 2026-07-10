@@ -1,0 +1,68 @@
+name: Bug report
+description: Report a reproducible problem in the Dense 1.3B FP8 integration.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Do not post vulnerabilities, private prompts, media, credentials, or
+        unsanitized absolute paths. Use the Security tab for vulnerabilities.
+  - type: input
+    id: version
+    attributes:
+      label: Release or commit
+      placeholder: Release tag (for example v1.0.1) or full commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: GPU/VRAM, OS, driver, Python, PyTorch/CUDA, ComfyUI, Diffusers, Transformers, and SageAttention versions.
+    validations:
+      required: true
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Workflow
+      options:
+        - T2V
+        - TI2V
+        - FLF experimental
+        - Custom/API workflow
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Include sanitized settings and the smallest workflow that reproduces the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Complete sanitized traceback
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: bf16
+    attributes:
+      label: Does the official BF16 transformer reproduce it?
+      options:
+        - Not tested
+        - Yes
+        - No
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I verified the release asset SHA-256 hashes.
+          required: true
+        - label: I removed private data and searched existing issues.
+          required: true

@@ -1,0 +1,39 @@
+[project]
+name = "lingbot-video-1.3b-fp8"
+version = "1.0.1"
+description = "Selective fused FP8 LingBot-Video Dense 1.3B runtime and workflows for ComfyUI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "ALX-CODE" }]
+dependencies = [
+    "diffusers>=0.38.0,<0.40",
+    "transformers>=5.3.0,<6",
+    "accelerate>=1.0,<2",
+    "safetensors>=0.4.5",
+    "Pillow>=10.0",
+    "numpy>=1.26",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: GPU :: NVIDIA CUDA",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Video",
+]
+
+[project.urls]
+Repository = "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8"
+Documentation = "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8#readme"
+Issues = "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/issues"
+Releases = "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/releases"
+
+# Comfy Registry publication is intentionally disabled until the maintainer
+# claims a publisher ID at https://registry.comfy.org. Do not guess or reserve
+# an identity in source control. After it is claimed, add:
+#
+# [tool.comfy]
+# PublisherId = "<claimed-publisher-id>"
+# DisplayName = "LingBot-Video Dense 1.3B FP8"

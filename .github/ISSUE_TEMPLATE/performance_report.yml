@@ -1,0 +1,38 @@
+name: Performance report
+description: Submit a reproducible speed result or regression.
+title: "[Performance]: "
+labels: [performance]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Release or commit
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: GPU/VRAM, OS, driver, Python, PyTorch/CUDA, ComfyUI, Diffusers, Transformers, and SageAttention versions.
+    validations:
+      required: true
+  - type: textarea
+    id: workload
+    attributes:
+      label: Exact workload
+      description: Width, height, frames, FPS, steps, CFG, shift, attention/CFG mode, seed, prompt-cache state, and post-processing.
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Measurement method
+      description: Warm-up count, measured runs, statistic reported, and whether prompt encoding/VAE/post-processing are included.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Results and visual-quality check
+    validations:
+      required: true

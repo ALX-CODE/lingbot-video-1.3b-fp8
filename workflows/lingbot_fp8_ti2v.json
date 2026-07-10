@@ -168,11 +168,11 @@
         640,
         352,
         61,
-        40,
-        3,
-        3,
+        28,
+        3.0,
+        3.0,
         42,
-        "sequential_sage",
+        "fixed",
         "sequential_sage"
       ],
       "color": "#3f285e",
@@ -326,6 +326,15 @@
       "mode": 0,
       "inputs": [
         {
+          "localized_name": "enabled",
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "enabled"
+          },
+          "link": 23
+        },
+        {
           "localized_name": "original",
           "name": "original",
           "type": "IMAGE",
@@ -336,15 +345,6 @@
           "name": "processed",
           "type": "IMAGE",
           "link": 20
-        },
-        {
-          "localized_name": "enabled",
-          "name": "enabled",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "enabled"
-          },
-          "link": 23
         }
       ],
       "title": "FlashVSR ON/OFF — Lazy (OFF does not run)",
@@ -455,8 +455,8 @@
         true,
         true,
         false,
-        527544476475123,
-        "randomize"
+        42,
+        "fixed"
       ],
       "color": "#4e3920",
       "bgcolor": "#322514"
@@ -477,6 +477,15 @@
       "mode": 0,
       "inputs": [
         {
+          "localized_name": "enabled",
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "enabled"
+          },
+          "link": 16
+        },
+        {
           "localized_name": "original",
           "name": "original",
           "type": "IMAGE",
@@ -487,15 +496,6 @@
           "name": "processed",
           "type": "IMAGE",
           "link": 24
-        },
-        {
-          "localized_name": "enabled",
-          "name": "enabled",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "enabled"
-          },
-          "link": 16
         }
       ],
       "title": "RIFE ON/OFF — Lazy (OFF does not run)",
@@ -748,13 +748,13 @@
       "order": 1,
       "mode": 0,
       "inputs": [],
-      "title": "Quick Presets + Safe Experiment Order",
+      "title": "⚠ Input Image Required",
       "properties": {},
       "widgets_values": [
-        "TI2V QUICK START\n\n1. Choose the first frame in the Load Image node.\n2. Describe the motion that begins from that exact frame.\n3. Tune FPS + seconds here; frame count is calculated automatically.\n4. Keep sequential_sage for the verified 16 GB baseline.\n5. First smoke test: 640×352, 20 FPS, 3 seconds, 24–30 steps. Raise to 40 steps after the chain is proven."
+        "⚠ INPUT IMAGE REQUIRED BEFORE QUEUEING\n\nThe placeholder `select_input_image_1.png` is intentionally not included. Choose your first frame in Load Image before pressing Queue, or ComfyUI will report a missing-input error.\n\nTI2V QUICK START\n\n1. Choose the first frame in the Load Image node.\n2. Describe the motion that begins from that exact frame.\n3. Tune FPS + seconds here; frame count is calculated automatically.\n4. Keep sequential_sage for the verified 16 GB baseline.\n5. First smoke test: 640×352, 20 FPS, 3 seconds, 24–30 steps. Raise to 40 steps after the chain is proven."
       ],
-      "color": "#5b4615",
-      "bgcolor": "#372b0e"
+      "color": "#6b2424",
+      "bgcolor": "#351414"
     },
     {
       "id": 9,
@@ -883,9 +883,9 @@
         "Node name for S&R": "LingBotPostProcessSettings"
       },
       "widgets_values": [
-        20,
-        true,
-        1.8,
+        20.0,
+        false,
+        2.0,
         false
       ],
       "color": "#704b19",
@@ -980,7 +980,7 @@
       "widgets_values": [
         "Preserve the supplied first frame exactly, then animate the subject with smooth, physically plausible motion and stable identity in one continuous shot.",
         "",
-        3,
+        3.0,
         "",
         640,
         352
@@ -1104,15 +1104,15 @@
         "Node name for S&R": "LingBotGenerationSettings"
       },
       "widgets_values": [
-        736,
-        448,
-        17,
-        4,
-        40,
-        2.7,
-        3,
-        515361555035418,
-        "randomize"
+        640,
+        352,
+        20.0,
+        3.0,
+        28,
+        3.0,
+        3.0,
+        42,
+        "fixed"
       ],
       "color": "#5b4615",
       "bgcolor": "#372b0e"
@@ -1165,9 +1165,9 @@
         "Node name for S&R": "LingBotPromptSettings"
       },
       "widgets_values": [
-        800,
-        800,
-        6.5
+        640,
+        352,
+        3.0
       ],
       "color": "#31556b",
       "bgcolor": "#1d3442"
@@ -1299,7 +1299,7 @@
       10,
       0,
       14,
-      2,
+      0,
       "BOOLEAN"
     ],
     [
@@ -1307,7 +1307,7 @@
       5,
       0,
       12,
-      0,
+      1,
       "IMAGE"
     ],
     [
@@ -1323,7 +1323,7 @@
       13,
       0,
       12,
-      1,
+      2,
       "IMAGE"
     ],
     [
@@ -1339,7 +1339,7 @@
       12,
       0,
       14,
-      0,
+      1,
       "IMAGE"
     ],
     [
@@ -1347,7 +1347,7 @@
       10,
       2,
       12,
-      2,
+      0,
       "BOOLEAN"
     ],
     [
@@ -1355,7 +1355,7 @@
       11,
       0,
       14,
-      1,
+      2,
       "IMAGE"
     ],
     [

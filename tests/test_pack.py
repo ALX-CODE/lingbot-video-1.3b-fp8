@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -10,12 +11,18 @@ import torch
 
 
 PACK_ROOT = Path(__file__).resolve().parents[1]
-COMFY_ROOT = PACK_ROOT.parents[1]
-if str(COMFY_ROOT) not in sys.path:
+_default_comfy_root = PACK_ROOT.parents[1]
+COMFY_ROOT = Path(os.environ.get("COMFYUI_ROOT", _default_comfy_root)).resolve()
+COMFY_AVAILABLE = (COMFY_ROOT / "comfy").is_dir()
+if COMFY_AVAILABLE and str(COMFY_ROOT) not in sys.path:
     sys.path.insert(0, str(COMFY_ROOT))
 
 
 def _load_pack():
+    if not COMFY_AVAILABLE:
+        raise unittest.SkipTest(
+            "ComfyUI is not available; set COMFYUI_ROOT to run integration tests"
+        )
     name = "_comfyui_lingbotvideo_test"
     if name in sys.modules and hasattr(sys.modules[name], "NODE_CLASS_MAPPINGS"):
         return sys.modules[name]
