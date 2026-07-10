@@ -1,0 +1,73 @@
+{
+  "1": {
+    "class_type": "LingBotModelLoader",
+    "inputs": {
+      "model_dir": "lingbot-video-dense-1.3b",
+      "transformer_subfolder": "transformer_fp8_dense",
+      "group_offload": false
+    }
+  },
+  "2": {
+    "class_type": "LingBotTextEncode",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "prompt": "{\"caption\":{\"comprehensive_description\":{\"scene_content_description\":\"A young woman with long wavy brown hair stands in a bright modern apartment living room. She wears an oversized cream knit cardigan over a white tank top with high-waisted beige trousers and holds a small tan leather handbag. Soft daylight enters through large windows behind a neutral sofa and potted plant.\",\"camera_movement_description\":\"The camera remains at eye level in a stable medium shot with a very slow forward dolly and shallow depth of field.\"},\"camera_info\":{\"color\":\"Warm\",\"frame_size\":\"Medium\",\"shot_type_angle\":\"Eye level\",\"lens_size\":\"Medium\",\"composition\":\"Center\",\"lighting\":\"Soft light\",\"lighting_type\":\"Daylight\"},\"world_knowledge\":[],\"prominent_elements\":[{\"name\":\"young woman\",\"description\":\"A woman modeling a neutral-toned fashion outfit.\",\"actions\":[{\"timestamp\":\"[0.0s - 1.0s]\",\"action\":\"stands still and smiles at the camera\"},{\"timestamp\":\"[1.0s - 2.0s]\",\"action\":\"shifts her weight slightly\"},{\"timestamp\":\"[2.0s - 3.0s]\",\"action\":\"gently adjusts the cardigan collar\"}],\"location\":\"center of the frame\",\"relative_size\":\"dominant\",\"appearance_details\":\"long wavy brown hair, cream cardigan, white top, beige trousers\",\"orientation\":\"upright and facing the camera\",\"expression\":\"friendly and confident\"}]},\"duration\":3}",
+      "negative_prompt": ""
+    }
+  },
+  "3": {
+    "class_type": "LingBotSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "conditioning": [
+        "2",
+        0
+      ],
+      "width": 640,
+      "height": 352,
+      "num_frames": 73,
+      "steps": 40,
+      "cfg": 3.0,
+      "shift": 3.0,
+      "seed": 42
+    }
+  },
+  "4": {
+    "class_type": "LingBotVAEDecode",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "latents": [
+        "3",
+        0
+      ]
+    }
+  },
+  "5": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": [
+        "4",
+        0
+      ],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "LingBot/dense_t2v",
+      "format": "video/webm",
+      "pingpong": false,
+      "save_output": true,
+      "pix_fmt": "yuv420p",
+      "crf": 20,
+      "save_metadata": true,
+      "trim_to_audio": false
+    }
+  }
+}

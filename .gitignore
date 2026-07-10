@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+models/
+output/
+input/
+*.safetensors
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.log
+*.pid

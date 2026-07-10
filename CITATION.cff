@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+title: "LingBot-Video Dense 1.3B FP8 for ComfyUI"
+message: "Please cite the original LingBot-Video paper and this software repository."
+type: software
+authors:
+  - name: "ALX-CODE"
+repository-code: "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8"
+license: Apache-2.0
+preferred-citation:
+  type: article
+  title: "Scaling Mixture-of-Experts Video Pretraining for Embodied Intelligence"
+  year: 2026
+  url: "https://arxiv.org/abs/2607.07675"

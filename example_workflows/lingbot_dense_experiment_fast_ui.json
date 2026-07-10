@@ -1,0 +1,1067 @@
+{
+  "id": "f0bdcd14-3582-44df-bdf6-1984e9c8f731",
+  "revision": 0,
+  "last_node_id": 16,
+  "last_link_id": 32,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LingBotModelLoader",
+      "pos": [
+        40,
+        100
+      ],
+      "size": [
+        350,
+        150
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "title": "1. Load Dense 1.3B (Sage)",
+      "properties": {
+        "Node name for S&R": "LingBotModelLoader"
+      },
+      "widgets_values": [
+        "lingbot-video-dense-1.3b",
+        "transformer_fp8_dense",
+        false
+      ],
+      "color": "#243447",
+      "bgcolor": "#182433"
+    },
+    {
+      "id": 2,
+      "type": "LingBotPromptEncode",
+      "pos": [
+        440,
+        100
+      ],
+      "size": [
+        500,
+        440
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "LINGBOT_MODEL",
+          "link": 1
+        },
+        {
+          "name": "duration_seconds",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration_seconds"
+          },
+          "link": 27
+        }
+      ],
+      "title": "2. Plaintext → High-Quality JSON → Qwen Encode",
+      "properties": {
+        "Node name for S&R": "LingBotPromptEncode"
+      },
+      "widgets_values": [
+        "A cinematic shot of a red fox walking through a misty forest at sunrise. Natural motion, stable anatomy, realistic lighting, and one continuous camera move.",
+        "",
+        3.0,
+        ""
+      ],
+      "color": "#243447",
+      "bgcolor": "#182433"
+    },
+    {
+      "id": 16,
+      "type": "LingBotPromptSettings",
+      "pos": [
+        40,
+        330
+      ],
+      "size": [
+        350,
+        170
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "title": "PROMPT / GEOMETRY — Changes Here Rebuild Qwen",
+      "properties": {
+        "Node name for S&R": "LingBotPromptSettings"
+      },
+      "widgets_values": [
+        640,
+        352,
+        3.0
+      ],
+      "color": "#31556b",
+      "bgcolor": "#1d3442"
+    },
+    {
+      "id": 3,
+      "type": "LingBotGenerationSettings",
+      "pos": [
+        40,
+        520
+      ],
+      "size": [
+        350,
+        250
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 30
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 31
+        },
+        {
+          "name": "duration_seconds",
+          "type": "FLOAT",
+          "widget": {
+            "name": "duration_seconds"
+          },
+          "link": 32
+        }
+      ],
+      "title": "SAMPLING CONTROLS — FPS / Steps / CFG / Shift / Seed",
+      "properties": {
+        "Node name for S&R": "LingBotGenerationSettings"
+      },
+      "widgets_values": [
+        640,
+        352,
+        20.0,
+        3.0,
+        40,
+        3.0,
+        3.0,
+        42
+      ],
+      "color": "#5b4615",
+      "bgcolor": "#372b0e"
+    },
+    {
+      "id": 4,
+      "type": "LingBotSampler",
+      "pos": [
+        1010,
+        100
+      ],
+      "size": [
+        390,
+        350
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "LINGBOT_MODEL",
+          "link": 2
+        },
+        {
+          "name": "conditioning",
+          "type": "LINGBOT_CONDITIONING",
+          "link": 4
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 5
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 6
+        },
+        {
+          "name": "num_frames",
+          "type": "INT",
+          "widget": {
+            "name": "num_frames"
+          },
+          "link": 7
+        },
+        {
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": 8
+        },
+        {
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": 9
+        },
+        {
+          "name": "shift",
+          "type": "FLOAT",
+          "widget": {
+            "name": "shift"
+          },
+          "link": 10
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": 11
+        },
+        {
+          "name": "cfg_execution",
+          "type": "COMBO",
+          "widget": {
+            "name": "cfg_execution"
+          },
+          "link": null
+        }
+      ],
+      "title": "3. FAST Denoise — Explicit Sage + CFG Mode Selector",
+      "properties": {
+        "Node name for S&R": "LingBotSampler"
+      },
+      "widgets_values": [
+        640,
+        352,
+        61,
+        40,
+        3.0,
+        3.0,
+        42,
+        "sequential_sage"
+      ],
+      "color": "#3f285e",
+      "bgcolor": "#291b3d"
+    },
+    {
+      "id": 5,
+      "type": "LingBotVAEDecode",
+      "pos": [
+        1470,
+        100
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "LINGBOT_MODEL",
+          "link": 3
+        },
+        {
+          "name": "latents",
+          "type": "LINGBOT_LATENTS",
+          "link": 12
+        }
+      ],
+      "title": "4. VAE Decode",
+      "properties": {
+        "Node name for S&R": "LingBotVAEDecode"
+      },
+      "widgets_values": [],
+      "color": "#3f285e",
+      "bgcolor": "#291b3d"
+    },
+    {
+      "id": 10,
+      "type": "LingBotPostProcessSettings",
+      "pos": [
+        1470,
+        300
+      ],
+      "size": [
+        330,
+        210
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source_fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "source_fps"
+          },
+          "link": 14
+        }
+      ],
+      "title": "POST-PROCESS TOGGLES — RIFE / FlashVSR",
+      "properties": {
+        "Node name for S&R": "LingBotPostProcessSettings"
+      },
+      "widgets_values": [
+        20.0,
+        false,
+        2.0,
+        false
+      ],
+      "color": "#704b19",
+      "bgcolor": "#402b10"
+    },
+    {
+      "id": 11,
+      "type": "RIFEInterpolation",
+      "pos": [
+        2600,
+        100
+      ],
+      "size": [
+        350,
+        280
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 21
+        },
+        {
+          "name": "source_fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "source_fps"
+          },
+          "link": 19
+        },
+        {
+          "name": "target_fps",
+          "type": "FLOAT",
+          "widget": {
+            "name": "target_fps"
+          },
+          "link": 15
+        },
+        {
+          "name": "scale",
+          "type": "FLOAT",
+          "widget": {
+            "name": "scale"
+          },
+          "link": null
+        },
+        {
+          "name": "model_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "model_name"
+          },
+          "link": null
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "link": null
+        },
+        {
+          "name": "use_fp16",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "use_fp16"
+          },
+          "link": null
+        }
+      ],
+      "title": "OPTIONAL B — RIFE Frame Interpolation",
+      "properties": {
+        "Node name for S&R": "RIFEInterpolation"
+      },
+      "widgets_values": [
+        20.0,
+        40.0,
+        1.0,
+        "flownet.pkl",
+        8,
+        true
+      ],
+      "color": "#234b55",
+      "bgcolor": "#173139"
+    },
+    {
+      "id": 12,
+      "type": "LingBotLazyImageSwitch",
+      "pos": [
+        2260,
+        100
+      ],
+      "size": [
+        300,
+        150
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "enabled"
+          },
+          "link": 23
+        },
+        {
+          "name": "original",
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "name": "processed",
+          "type": "IMAGE",
+          "link": 20
+        }
+      ],
+      "title": "FlashVSR ON/OFF — Lazy (OFF does not run)",
+      "properties": {
+        "Node name for S&R": "LingBotLazyImageSwitch"
+      },
+      "widgets_values": [
+        false
+      ],
+      "color": "#4e3920",
+      "bgcolor": "#322514"
+    },
+    {
+      "id": 13,
+      "type": "FlashVSRNode",
+      "pos": [
+        1870,
+        100
+      ],
+      "size": [
+        360,
+        330
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "title": "OPTIONAL A — Lihaoyun FlashVSR 2×",
+      "properties": {
+        "Node name for S&R": "FlashVSRNode"
+      },
+      "widgets_values": [
+        "FlashVSR-v1.1",
+        "tiny",
+        2,
+        true,
+        true,
+        false,
+        0
+      ],
+      "color": "#4e3920",
+      "bgcolor": "#322514"
+    },
+    {
+      "id": 14,
+      "type": "LingBotLazyImageSwitch",
+      "pos": [
+        3000,
+        100
+      ],
+      "size": [
+        300,
+        150
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "enabled"
+          },
+          "link": 16
+        },
+        {
+          "name": "original",
+          "type": "IMAGE",
+          "link": 22
+        },
+        {
+          "name": "processed",
+          "type": "IMAGE",
+          "link": 24
+        }
+      ],
+      "title": "RIFE ON/OFF — Lazy (OFF does not run)",
+      "properties": {
+        "Node name for S&R": "LingBotLazyImageSwitch"
+      },
+      "widgets_values": [
+        false
+      ],
+      "color": "#234b55",
+      "bgcolor": "#173139"
+    },
+    {
+      "id": 15,
+      "type": "LingBotPromptPreview",
+      "pos": [
+        440,
+        570
+      ],
+      "size": [
+        500,
+        110
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "structured_json",
+          "type": "STRING",
+          "link": 28
+        },
+        {
+          "name": "expanded_caption",
+          "type": "STRING",
+          "link": 29
+        }
+      ],
+      "title": "Generated LingBot JSON Preview",
+      "properties": {
+        "Node name for S&R": "LingBotPromptPreview"
+      },
+      "widgets_values": [],
+      "color": "#243447",
+      "bgcolor": "#182433"
+    },
+    {
+      "id": 6,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        3340,
+        100
+      ],
+      "size": [
+        450,
+        290
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 25
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "name": "meta_batch",
+          "shape": 7,
+          "type": "VHS_BatchManager",
+          "link": null
+        },
+        {
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "name": "frame_rate",
+          "type": "FLOAT",
+          "widget": {
+            "name": "frame_rate"
+          },
+          "link": 26
+        },
+        {
+          "name": "loop_count",
+          "type": "INT",
+          "widget": {
+            "name": "loop_count"
+          },
+          "link": null
+        },
+        {
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "name": "format",
+          "type": "COMBO",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "name": "pingpong",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "pingpong"
+          },
+          "link": null
+        },
+        {
+          "name": "save_output",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "save_output"
+          },
+          "link": null
+        }
+      ],
+      "title": "5. Encode Selected Result + Save MP4",
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 20.0,
+        "loop_count": 0,
+        "filename_prefix": "LingBotFP8/video",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_output": true,
+        "pix_fmt": "yuv420p",
+        "crf": 19,
+        "save_metadata": true,
+        "trim_to_audio": false,
+        "videopreview": {
+          "hidden": false,
+          "paused": false
+        }
+      },
+      "color": "#254a36",
+      "bgcolor": "#183024"
+    },
+    {
+      "id": 7,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        700
+      ],
+      "size": [
+        570,
+        300
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "title": "Quick Presets + Safe Experiment Order",
+      "properties": {},
+      "widgets_values": [
+        "## FAST Sage workflow\nThe measured-fastest default is **sequential_sage**. The sampler dropdown also exposes exact masked **batched_native**, full **batched_sage_varlen**, and the older **hybrid_sage_safe** for experiments. All batched modes automatically return to sequential CFG above 16,384 video tokens or after a CUDA OOM.\n\nAt 640×352×61 frames, three measured denoise steps took 5.454s sequential, 6.022s Sage-varlen batch, and 11.912s native batch. Keep sequential Sage unless a different resolution/driver combination benchmarks better.\n\nEnter **FPS + total seconds**. The frame count is calculated automatically. Keep the seed fixed when comparing settings."
+      ],
+      "color": "#5b4615",
+      "bgcolor": "#372b0e"
+    },
+    {
+      "id": 8,
+      "type": "MarkdownNote",
+      "pos": [
+        650,
+        700
+      ],
+      "size": [
+        570,
+        300
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "title": "How Progress Is Reported",
+      "properties": {},
+      "widgets_values": [
+        "## Five visible stages\n1. **Load Model** — file validation, transformer, VAE/scheduler\n2. **Encode Prompt** — JSON validation, Qwen load/encode/evict\n3. **Denoise** — exact `step / total`, percent, elapsed, and ETA\n4. **VAE Decode** — latent video to RGB frames\n5. **Encode + Save** — Video Helper Suite frame progress\n\nThe active node is outlined by ComfyUI. LingBot nodes also display multiline live status directly on the node. Console logs remain available for deeper diagnostics."
+      ],
+      "color": "#243447",
+      "bgcolor": "#182433"
+    },
+    {
+      "id": 9,
+      "type": "MarkdownNote",
+      "pos": [
+        1260,
+        700
+      ],
+      "size": [
+        570,
+        300
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "title": "Prompt Rules (Important)",
+      "properties": {},
+      "widgets_values": [
+        "## Plaintext is now supported\nWrite normal prose in the first prompt box. The installed local Qwen3-VL model expands it, maps it to LingBot's full JSON schema, validates timestamps/required fields, repairs once if needed, then encodes it — all from one Qwen load.\n\nThe second box is an optional structured-JSON override for advanced use. Leave it empty for plaintext mode. The generated caption and JSON appear in the preview node.\n\nLeave negative prompt empty to use LingBot's vendored default JSON."
+      ],
+      "color": "#4b2a2a",
+      "bgcolor": "#301b1b"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "LINGBOT_MODEL"
+    ],
+    [
+      2,
+      1,
+      0,
+      4,
+      0,
+      "LINGBOT_MODEL"
+    ],
+    [
+      3,
+      1,
+      0,
+      5,
+      0,
+      "LINGBOT_MODEL"
+    ],
+    [
+      4,
+      2,
+      0,
+      4,
+      1,
+      "LINGBOT_CONDITIONING"
+    ],
+    [
+      5,
+      3,
+      0,
+      4,
+      2,
+      "INT"
+    ],
+    [
+      6,
+      3,
+      1,
+      4,
+      3,
+      "INT"
+    ],
+    [
+      7,
+      3,
+      2,
+      4,
+      4,
+      "INT"
+    ],
+    [
+      8,
+      3,
+      4,
+      4,
+      5,
+      "INT"
+    ],
+    [
+      9,
+      3,
+      5,
+      4,
+      6,
+      "FLOAT"
+    ],
+    [
+      10,
+      3,
+      6,
+      4,
+      7,
+      "FLOAT"
+    ],
+    [
+      11,
+      3,
+      7,
+      4,
+      8,
+      "INT"
+    ],
+    [
+      12,
+      4,
+      0,
+      5,
+      1,
+      "LINGBOT_LATENTS"
+    ],
+    [
+      13,
+      5,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      3,
+      3,
+      10,
+      0,
+      "FLOAT"
+    ],
+    [
+      15,
+      10,
+      1,
+      11,
+      2,
+      "FLOAT"
+    ],
+    [
+      16,
+      10,
+      0,
+      14,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      18,
+      5,
+      0,
+      12,
+      1,
+      "IMAGE"
+    ],
+    [
+      19,
+      3,
+      3,
+      11,
+      1,
+      "FLOAT"
+    ],
+    [
+      20,
+      13,
+      0,
+      12,
+      2,
+      "IMAGE"
+    ],
+    [
+      21,
+      12,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      22,
+      12,
+      0,
+      14,
+      1,
+      "IMAGE"
+    ],
+    [
+      23,
+      10,
+      2,
+      12,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      24,
+      11,
+      0,
+      14,
+      2,
+      "IMAGE"
+    ],
+    [
+      25,
+      14,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      10,
+      3,
+      6,
+      4,
+      "FLOAT"
+    ],
+    [
+      27,
+      16,
+      2,
+      2,
+      1,
+      "FLOAT"
+    ],
+    [
+      28,
+      2,
+      1,
+      15,
+      0,
+      "STRING"
+    ],
+    [
+      29,
+      2,
+      2,
+      15,
+      1,
+      "STRING"
+    ],
+    [
+      30,
+      16,
+      0,
+      3,
+      0,
+      "INT"
+    ],
+    [
+      31,
+      16,
+      1,
+      3,
+      1,
+      "INT"
+    ],
+    [
+      32,
+      16,
+      2,
+      3,
+      2,
+      "FLOAT"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "MODEL + PLAINTEXT / STRUCTURED PROMPT",
+      "bounding": [
+        20,
+        45,
+        940,
+        760
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "LIVE DENOISE PROGRESS",
+      "bounding": [
+        985,
+        45,
+        435,
+        445
+      ],
+      "color": "#7652a4",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "DECODE + OPTIONAL FLASHVSR → RIFE + MP4",
+      "bounding": [
+        1445,
+        45,
+        2375,
+        500
+      ],
+      "color": "#4d8d67",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.72,
+      "offset": [
+        140,
+        120
+      ]
+    },
+    "frontendVersion": "1.45.15",
+    "VHS_KeepIntermediate": true,
+    "VHS_MetadataImage": true,
+    "VHS_latentpreview": false
+  },
+  "version": 0.4
+}

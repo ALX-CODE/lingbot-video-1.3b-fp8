@@ -1,0 +1,5 @@
+diffusers>=0.38.0,<0.40
+transformers>=5.3.0,<6
+safetensors>=0.4.5
+Pillow>=10.0
+numpy>=1.26
