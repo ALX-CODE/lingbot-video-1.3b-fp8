@@ -207,6 +207,15 @@
       "mode": 0,
       "inputs": [
         {
+          "localized_name": "enabled",
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "enabled"
+          },
+          "link": 23
+        },
+        {
           "localized_name": "original",
           "name": "original",
           "type": "IMAGE",
@@ -217,15 +226,6 @@
           "name": "processed",
           "type": "IMAGE",
           "link": 20
-        },
-        {
-          "localized_name": "enabled",
-          "name": "enabled",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "enabled"
-          },
-          "link": 23
         }
       ],
       "title": "FlashVSR ON/OFF — Lazy (OFF does not run)",
@@ -336,8 +336,8 @@
         true,
         true,
         false,
-        648827667979725,
-        "randomize"
+        42,
+        "fixed"
       ],
       "color": "#4e3920",
       "bgcolor": "#322514"
@@ -358,6 +358,15 @@
       "mode": 0,
       "inputs": [
         {
+          "localized_name": "enabled",
+          "name": "enabled",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "enabled"
+          },
+          "link": 16
+        },
+        {
           "localized_name": "original",
           "name": "original",
           "type": "IMAGE",
@@ -368,15 +377,6 @@
           "name": "processed",
           "type": "IMAGE",
           "link": 24
-        },
-        {
-          "localized_name": "enabled",
-          "name": "enabled",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "enabled"
-          },
-          "link": 16
         }
       ],
       "title": "RIFE ON/OFF — Lazy (OFF does not run)",
@@ -671,13 +671,13 @@
       "order": 3,
       "mode": 0,
       "inputs": [],
-      "title": "Quick Presets + Safe Experiment Order",
+      "title": "⚠ Two Input Images Required",
       "properties": {},
       "widgets_values": [
-        "EXPERIMENTAL FLF QUICK START\n\nThis is not a native LingBot mode. The first latent and final latent are hard-pinned while LingBot generates the bridge.\n\n1. Choose closely related first and last images: same subject, scene, camera axis, and aspect ratio.\n2. Describe the exact motion connecting them.\n3. First test: 640×352, 20 FPS, 3 seconds, 24–30 steps, CFG 3, shift 3.\n4. Keep sequential_sage. Leave FlashVSR and RIFE off until the bridge works.\n5. Large viewpoint or identity changes may morph, freeze, or jump because LingBot was trained for first-frame TI2V, not FLF."
+        "⚠ TWO INPUT IMAGES REQUIRED BEFORE QUEUEING\n\nThe placeholder files `select_input_image_1.png` and `select_input_image_2.png` are intentionally not included. Choose both endpoint images before pressing Queue, or ComfyUI will report a missing-input error.\n\nEXPERIMENTAL FLF QUICK START\n\nThis is not a native LingBot mode. The first latent and final latent are hard-pinned while LingBot generates the bridge.\n\n1. Choose closely related first and last images: same subject, scene, camera axis, and aspect ratio.\n2. Describe the exact motion connecting them.\n3. First test: 640×352, 20 FPS, 3 seconds, 24–30 steps, CFG 3, shift 3.\n4. Keep sequential_sage. Leave FlashVSR and RIFE off until the bridge works.\n5. Large viewpoint or identity changes may morph, freeze, or jump because LingBot was trained for first-frame TI2V, not FLF."
       ],
-      "color": "#5b4615",
-      "bgcolor": "#372b0e"
+      "color": "#6b2424",
+      "bgcolor": "#351414"
     },
     {
       "id": 4,
@@ -788,11 +788,11 @@
         640,
         352,
         61,
-        40,
-        3,
-        3,
+        28,
+        3.0,
+        3.0,
         42,
-        "sequential_sage",
+        "fixed",
         "sequential_sage"
       ],
       "color": "#3f285e",
@@ -1023,7 +1023,7 @@
       "widgets_values": [
         "Create one continuous, physically plausible transition from the supplied first frame to the supplied last frame. Preserve identity, geometry, lighting, and scene continuity.",
         "",
-        3,
+        3.0,
         "",
         640,
         352
@@ -1124,15 +1124,15 @@
         "Node name for S&R": "LingBotGenerationSettings"
       },
       "widgets_values": [
-        720,
-        1088,
-        20,
-        4,
-        40,
-        2.5,
-        3,
-        1002216145504415,
-        "randomize"
+        640,
+        352,
+        20.0,
+        3.0,
+        28,
+        3.0,
+        3.0,
+        42,
+        "fixed"
       ],
       "color": "#5b4615",
       "bgcolor": "#372b0e"
@@ -1194,9 +1194,9 @@
         "Node name for S&R": "LingBotPostProcessSettings"
       },
       "widgets_values": [
-        20,
-        true,
-        1.8,
+        20.0,
+        false,
+        2.0,
         false
       ],
       "color": "#704b19",
@@ -1329,7 +1329,7 @@
       10,
       0,
       14,
-      2,
+      0,
       "BOOLEAN"
     ],
     [
@@ -1337,7 +1337,7 @@
       5,
       0,
       12,
-      0,
+      1,
       "IMAGE"
     ],
     [
@@ -1353,7 +1353,7 @@
       13,
       0,
       12,
-      1,
+      2,
       "IMAGE"
     ],
     [
@@ -1369,7 +1369,7 @@
       12,
       0,
       14,
-      0,
+      1,
       "IMAGE"
     ],
     [
@@ -1377,7 +1377,7 @@
       10,
       2,
       12,
-      2,
+      0,
       "BOOLEAN"
     ],
     [
@@ -1385,7 +1385,7 @@
       11,
       0,
       14,
-      1,
+      2,
       "IMAGE"
     ],
     [

@@ -5,9 +5,68 @@ type: software
 authors:
   - name: "ALX-CODE"
 repository-code: "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8"
+url: "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/releases/tag/v1.0.1"
 license: Apache-2.0
+version: "1.0.1"
+date-released: "2026-07-10"
 preferred-citation:
   type: article
   title: "Scaling Mixture-of-Experts Video Pretraining for Embodied Intelligence"
+  authors:
+    - family-names: Ma
+      given-names: Shuailei
+    - family-names: Liao
+      given-names: Jiaqi
+    - family-names: Wang
+      given-names: Xinyang
+    - family-names: Wang
+      given-names: Jingjing
+    - family-names: Feng
+      given-names: Chaoran
+    - family-names: Hu
+      given-names: Zijing
+    - family-names: Bao
+      given-names: Chong
+    - family-names: Xi
+      given-names: Zichen
+    - family-names: Gan
+      given-names: Yuqi
+    - family-names: Wang
+      given-names: Weisen
+    - family-names: Zeng
+      given-names: Yanhong
+    - family-names: Zhao
+      given-names: Qin
+    - family-names: Shi
+      given-names: Zifan
+    - family-names: Wu
+      given-names: Wei
+    - family-names: Ouyang
+      given-names: Hao
+    - family-names: Wang
+      given-names: Qiuyu
+    - family-names: Zhang
+      given-names: Shangzhan
+    - family-names: Shao
+      given-names: Jiahao
+    - family-names: Sun
+      given-names: Yipengjing
+    - family-names: Hu
+      given-names: Liangxiao
+    - family-names: Pan
+      given-names: Lunke
+    - family-names: Xue
+      given-names: Nan
+    - family-names: Zheng
+      given-names: Kecheng
+    - family-names: Xu
+      given-names: Yinghao
+    - family-names: Zhu
+      given-names: Xing
+    - family-names: Shen
+      given-names: Yujun
+    - family-names: Cheng
+      given-names: Ka Leong
   year: 2026
+  doi: "10.48550/arXiv.2607.07675"
   url: "https://arxiv.org/abs/2607.07675"

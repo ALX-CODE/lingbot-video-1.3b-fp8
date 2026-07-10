@@ -1,6 +1,8 @@
 # Benchmarks
 
-All numbers below are local measurements, not universal performance claims.
+All numbers below are local measurements on one RTX 5080, not universal
+performance claims. No result in this file establishes performance for the RTX
+50-series as a whole.
 
 ## Matched sampler smoke test
 
@@ -16,6 +18,9 @@ Hardware and runtime:
 - SageAttention 2.2.0
 
 Workload: cached text conditioning, 256×144, 5 frames, 1 denoise step, CFG 1.
+This deliberately tiny test isolates sampler overhead; it is not representative
+of a normal 28- or 40-step video and should not be used to estimate end-to-end
+generation time.
 
 | Transformer | Sampler time | Relative |
 | --- | ---: | ---: |
@@ -48,3 +53,9 @@ FP8 speedup was concentrated in QKV and gate/up projections.
 Visual output was successfully validated on the test machine. Exact visual
 equivalence to BF16 is not claimed; use the official BF16 transformer when
 reference precision matters more than speed.
+
+## Reproducibility limitations
+
+The original measurement did not publish a standalone benchmark runner, raw
+timing JSON, or paired BF16/FP8 media. Until those artifacts and a full-workload
+comparison are published, quote this result only as a local one-step smoke test.

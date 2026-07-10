@@ -1,0 +1,77 @@
+name: Verify release assets
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to verify
+        required: true
+        default: v1.0.1
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Verify required assets and SHA-256 digests
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import urllib.request
+
+          repository = os.environ["GITHUB_REPOSITORY"]
+          tag = os.environ["RELEASE_TAG"]
+          token = os.environ["GH_TOKEN"]
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{repository}/releases/tags/{tag}",
+              headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+          )
+          with urllib.request.urlopen(request) as response:
+              release = json.load(response)
+
+          expected = {}
+          for line in pathlib.Path("SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
+              digest, name = line.split(maxsplit=1)
+              expected[name.lstrip("* ")] = digest
+
+          assets = {asset["name"]: asset for asset in release["assets"]}
+          required = {
+              "config.json",
+              "diffusion_pytorch_model.safetensors",
+              "SHA256SUMS.txt",
+              "LICENSE",
+              "NOTICE.md",
+          }
+          missing = required - assets.keys()
+          if missing:
+              raise SystemExit(f"Missing release assets: {sorted(missing)}")
+
+          for name in ("config.json", "diffusion_pytorch_model.safetensors"):
+              actual = assets[name].get("digest")
+              wanted = f"sha256:{expected[name]}"
+              if actual != wanted:
+                  raise SystemExit(f"Digest mismatch for {name}: {actual!r} != {wanted!r}")
+
+          config_request = urllib.request.Request(assets["config.json"]["browser_download_url"])
+          with urllib.request.urlopen(config_request) as response:
+              config_bytes = response.read()
+          config_digest = hashlib.sha256(config_bytes).hexdigest()
+          if config_digest != expected["config.json"]:
+              raise SystemExit("Downloaded config.json does not match SHA256SUMS.txt")
+          print(f"Verified {tag}: {len(required)} required assets and both model digests")
+          PY

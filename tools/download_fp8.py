@@ -5,13 +5,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 
 
+RELEASE_VERSION = "v1.0.1"
 BASE_URL = (
     "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/"
-    "releases/latest/download"
+    f"releases/download/{RELEASE_VERSION}"
 )
 ASSETS = {
     "config.json": "4c010f3ea6236b7317d46bcea1fc6c99f53fe743b19cfdb8be6c0ac326acec47",
@@ -36,36 +38,61 @@ def download(name: str, destination: Path) -> None:
         return
 
     partial = final.with_suffix(final.suffix + ".part")
-    downloaded = partial.stat().st_size if partial.exists() else 0
-    request = urllib.request.Request(f"{BASE_URL}/{name}")
-    if downloaded:
-        request.add_header("Range", f"bytes={downloaded}-")
+    expected = ASSETS[name]
+    if partial.is_file() and sha256(partial) == expected:
+        partial.replace(final)
+        print(f"Verified {final}")
+        return
 
-    with urllib.request.urlopen(request) as response:
-        if downloaded and response.status != 206:
-            downloaded = 0
-            partial.unlink(missing_ok=True)
-        mode = "ab" if downloaded else "wb"
-        total = response.headers.get("Content-Length")
-        total_bytes = downloaded + int(total) if total else None
-        with partial.open(mode) as handle:
-            while chunk := response.read(8 * 1024 * 1024):
-                handle.write(chunk)
-                downloaded += len(chunk)
-                if total_bytes:
-                    print(
-                        f"\r{name}: {downloaded / 1e9:.2f}/{total_bytes / 1e9:.2f} GB "
-                        f"({100 * downloaded / total_bytes:.1f}%)",
-                        end="",
-                        flush=True,
-                    )
-        print()
+    # At most one clean restart: enough to recover a stale/full .part or a bad
+    # resumed prefix without hiding a persistently corrupt release asset.
+    restarted = False
+    while True:
+        downloaded = partial.stat().st_size if partial.exists() else 0
+        resumed = downloaded > 0
+        request = urllib.request.Request(f"{BASE_URL}/{name}")
+        if downloaded:
+            request.add_header("Range", f"bytes={downloaded}-")
 
-    actual = sha256(partial)
-    if actual != ASSETS[name]:
-        raise RuntimeError(f"SHA-256 mismatch for {name}: {actual}")
-    partial.replace(final)
-    print(f"Verified {final}")
+        try:
+            response_context = urllib.request.urlopen(request)
+        except urllib.error.HTTPError as exc:
+            if downloaded and exc.code == 416 and not restarted:
+                partial.unlink(missing_ok=True)
+                restarted = True
+                continue
+            raise
+
+        with response_context as response:
+            if downloaded and getattr(response, "status", 200) != 206:
+                downloaded = 0
+                partial.unlink(missing_ok=True)
+            mode = "ab" if downloaded else "wb"
+            total = response.headers.get("Content-Length")
+            total_bytes = downloaded + int(total) if total else None
+            with partial.open(mode) as handle:
+                while chunk := response.read(8 * 1024 * 1024):
+                    handle.write(chunk)
+                    downloaded += len(chunk)
+                    if total_bytes:
+                        print(
+                            f"\r{name}: {downloaded / 1e9:.2f}/{total_bytes / 1e9:.2f} GB "
+                            f"({100 * downloaded / total_bytes:.1f}%)",
+                            end="",
+                            flush=True,
+                        )
+            print()
+
+        actual = sha256(partial)
+        if actual == expected:
+            partial.replace(final)
+            print(f"Verified {final}")
+            return
+        partial.unlink(missing_ok=True)
+        if resumed and not restarted:
+            restarted = True
+            continue
+        raise RuntimeError(f"SHA-256 mismatch for {name}: {actual}; discarded corrupt partial file")
 
 
 def main() -> None:

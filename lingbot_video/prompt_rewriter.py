@@ -1,3 +1,6 @@
+# Added and adapted by ALX-CODE in 2026 for plaintext-to-LingBot JSON integration.
+# It interoperates with Robbyant/LingBot-Video prompt structures at baseline
+# commit a2bb04b78edd848500dc27a26e035a95442ae186. See ../NOTICE.md.
 from __future__ import annotations
 
 import json
@@ -179,7 +182,7 @@ def normalize_generated_prompt(
         return "", errors
     normalized = {
         "caption": caption,
-        "duration": int(round(duration)),
+        "duration": int(duration) if duration.is_integer() else duration,
     }
     return json.dumps(normalized, ensure_ascii=False, indent=2), []
 
@@ -204,7 +207,6 @@ def repair_missing_element_actions(
         value = comprehensive.get("scene_content_description")
         if isinstance(value, str):
             scene = value.strip()
-    motion_basis = scene or detailed_caption.strip()
     count = 0
     for element in elements:
         if not isinstance(element, dict):
@@ -216,11 +218,21 @@ def repair_missing_element_actions(
         name = name.strip() if isinstance(name, str) and name.strip() else "The visible element"
         description = element.get("description")
         description = description.strip() if isinstance(description, str) else ""
-        basis = motion_basis or description or "remains visually consistent as the shot continues"
+        basis = description or scene or detailed_caption.strip()
+        if basis:
+            action_text = (
+                f"{name} remains visually coherent with its description ({basis}) while following "
+                "only the physically plausible motion implied for this element"
+            )
+        else:
+            action_text = (
+                f"{name} remains visually consistent and follows only the physically plausible "
+                "motion implied for this element"
+            )
         element["actions"] = [
             {
                 "timestamp": f"[0.0s - {float(duration_seconds):g}s]",
-                "action": f"{name} follows the continuous motion described in the scene: {basis}",
+                "action": action_text,
             }
         ]
         count += 1
@@ -240,8 +252,8 @@ def validate_caption(caption: Any, duration_seconds: float) -> list[str]:
         camera = comprehensive.get("camera_movement_description")
         if not isinstance(scene, str) or not scene.strip():
             errors.append("scene_content_description must be a non-empty string")
-        if not isinstance(camera, str):
-            errors.append("camera_movement_description must be a string")
+        if not isinstance(camera, str) or not camera.strip():
+            errors.append("camera_movement_description must be a non-empty string")
 
     camera_info = caption.get("camera_info")
     if not isinstance(camera_info, dict):
@@ -251,8 +263,11 @@ def validate_caption(caption: Any, duration_seconds: float) -> list[str]:
             if not isinstance(camera_info.get(field), str) or not camera_info[field].strip():
                 errors.append(f"camera_info.{field} must be a non-empty string")
 
-    if not isinstance(caption.get("world_knowledge"), list):
+    world_knowledge = caption.get("world_knowledge")
+    if not isinstance(world_knowledge, list):
         errors.append("world_knowledge must be an array")
+    elif any(not isinstance(item, str) or not item.strip() for item in world_knowledge):
+        errors.append("world_knowledge entries must be non-empty strings")
 
     elements = caption.get("prominent_elements")
     if not isinstance(elements, list) or not elements:
@@ -268,10 +283,14 @@ def validate_caption(caption: Any, duration_seconds: float) -> list[str]:
         for field in ELEMENT_FIELDS:
             if field not in element:
                 errors.append(f"{prefix}.{field} is required")
+        for field in ("name", "description"):
+            if not isinstance(element.get(field), str) or not element[field].strip():
+                errors.append(f"{prefix}.{field} must be a non-empty string")
         actions = element.get("actions")
         if not isinstance(actions, list) or not actions:
             errors.append(f"{prefix}.actions must be a non-empty array")
             continue
+        previous_end: float | None = None
         for action_index, action in enumerate(actions):
             action_prefix = f"{prefix}.actions[{action_index}]"
             if not isinstance(action, dict):
@@ -281,11 +300,23 @@ def validate_caption(caption: Any, duration_seconds: float) -> list[str]:
             if not isinstance(timestamp, str):
                 errors.append(f"{action_prefix}.timestamp must be a string")
             else:
-                values = [float(value) for value in re.findall(r"(\d+(?:\.\d+)?)\s*s", timestamp)]
-                if not values:
-                    errors.append(f"{action_prefix}.timestamp must contain seconds")
-                elif min(values) < 0.0 or max(values) > duration + 1e-6:
-                    errors.append(f"{action_prefix}.timestamp exceeds the {duration:g}s duration")
+                match = re.fullmatch(
+                    r"\[\s*(\d+(?:\.\d+)?)\s*s\s*-\s*(\d+(?:\.\d+)?)\s*s\s*\]",
+                    timestamp,
+                )
+                if match is None:
+                    errors.append(
+                        f"{action_prefix}.timestamp must use '[start_s - end_s]' interval syntax"
+                    )
+                else:
+                    start, end = (float(value) for value in match.groups())
+                    if start > end:
+                        errors.append(f"{action_prefix}.timestamp start must not exceed end")
+                    if start < 0.0 or end > duration + 1e-6:
+                        errors.append(f"{action_prefix}.timestamp exceeds the {duration:g}s duration")
+                    if previous_end is not None and start < previous_end - 1e-6:
+                        errors.append(f"{action_prefix}.timestamp overlaps the previous action")
+                    previous_end = max(previous_end or 0.0, end)
             action_text = action.get("action")
             if not isinstance(action_text, str) or not action_text.strip():
                 errors.append(f"{action_prefix}.action must be a non-empty string")
