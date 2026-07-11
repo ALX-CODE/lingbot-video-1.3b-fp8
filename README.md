@@ -7,13 +7,29 @@ image-to-video (TI2V), and experimental first/last-frame workflows.
 
 > This is an independent community project, not an official Robbyant release.
 
-## Example output
+## Example outputs
+
+### Photorealistic text-to-video
+
+![Photorealistic man walking through rain](docs/media/lingbot-t2v-photoreal-rain.gif)
+
+A text-to-video result showcasing stable identity, wet fabric, facial detail,
+and continuous close-range camera movement.
+
+### First-frame image-to-video
+
+![Stylized character expression animated from a first frame](docs/media/lingbot-ti2v-anime-expression.gif)
+
+An image-to-video result showcasing strong first-frame style retention,
+consistent character features, and a continuous expression change.
+
+### Original FP8 smoke preview
 
 ![Compressed FP8 text-to-video preview](docs/media/fp8-t2v-sample.gif)
 
-This GIF is a compressed preview from the published FP8 path. It demonstrates
-that the integration produces video; it is not a BF16/FP8 quality-equivalence
-claim and should not be used for timing.
+These GIFs are compressed previews from the published FP8 path. They
+demonstrate that the integration produces video; they are not BF16/FP8
+quality-equivalence comparisons and should not be used for timing.
 
 ## What the FP8 path does
 
