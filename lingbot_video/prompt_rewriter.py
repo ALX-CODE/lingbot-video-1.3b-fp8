@@ -176,7 +176,37 @@ def normalize_generated_prompt(
     duration_seconds: float,
 ) -> tuple[str, list[str]]:
     duration = float(duration_seconds)
-    caption = payload.get("caption", payload)
+    # Qwen occasionally preserves the meaning of this free-form field while
+    # choosing a scalar or object instead of the schema's array container.
+    # Coerce only the container shape here; semantic/schema errors elsewhere
+    # remain strict and still use the normal repair path.
+    normalized_payload = deepcopy(payload)
+    caption = normalized_payload.get("caption", normalized_payload)
+    if isinstance(caption, dict):
+        world_knowledge = caption.get("world_knowledge")
+        items = world_knowledge if isinstance(world_knowledge, list) else [world_knowledge]
+        normalized_world_knowledge: list[str] = []
+        for item in items:
+            if item is None:
+                continue
+            if isinstance(item, dict):
+                for key, value in item.items():
+                    key_text = str(key).strip()
+                    if isinstance(value, str):
+                        value_text = value.strip()
+                    else:
+                        value_text = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+                    text = f"{key_text}: {value_text}" if key_text and value_text else key_text or value_text
+                    if text:
+                        normalized_world_knowledge.append(text)
+                continue
+            if isinstance(item, str):
+                text = item.strip()
+            else:
+                text = json.dumps(item, ensure_ascii=False, separators=(",", ":"))
+            if text:
+                normalized_world_knowledge.append(text)
+        caption["world_knowledge"] = normalized_world_knowledge
     errors = validate_caption(caption, duration)
     if errors:
         return "", errors

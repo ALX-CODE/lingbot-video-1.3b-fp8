@@ -58,8 +58,8 @@ class DownloaderHardeningTests(unittest.TestCase):
         self.module = _load_downloader()
 
     def test_release_url_is_version_pinned(self):
-        self.assertEqual(self.module.RELEASE_VERSION, "v1.0.1")
-        self.assertIn("/releases/download/v1.0.1", self.module.BASE_URL)
+        self.assertEqual(self.module.RELEASE_VERSION, "v1.0.2")
+        self.assertIn("/releases/download/v1.0.2", self.module.BASE_URL)
         self.assertNotIn("latest", self.module.BASE_URL)
 
     def test_valid_complete_partial_is_promoted_without_network(self):

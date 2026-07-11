@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2 — 2026-07-10
+
+- Normalized Qwen-generated `world_knowledge` values into LingBot's required
+  array shape when the model returns a string, object, null, or omits the field.
+- Preserved strict validation for substantive schema errors while avoiding an
+  unnecessary and sometimes unsuccessful second Qwen repair pass.
+- Re-published the unchanged FP8 checkpoint under the matching patch tag so
+  code and model downloads remain version-aligned.
+
 ## 1.0.1 — 2026-07-10
 
 - Corrected all published workflows to safe 640×352, 20 FPS, 3-second,
