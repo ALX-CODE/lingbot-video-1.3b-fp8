@@ -429,6 +429,37 @@ class PackTests(unittest.TestCase):
         structured, errors = rewriter.normalize_generated_prompt(parsed, 3.0)
         self.assertEqual(errors, [])
         self.assertEqual(json.loads(structured)["duration"], 3)
+        for generated_value, expected in (
+            ("Rain makes pavement reflective.", ["Rain makes pavement reflective."]),
+            ({"rain": "creates wet reflections"}, ["rain: creates wet reflections"]),
+            (None, []),
+        ):
+            world_variant = json.loads(json.dumps(parsed))
+            world_variant["caption"]["world_knowledge"] = generated_value
+            normalized_variant, variant_errors = rewriter.normalize_generated_prompt(
+                world_variant,
+                3.0,
+            )
+            self.assertEqual(variant_errors, [])
+            self.assertEqual(
+                json.loads(normalized_variant)["caption"]["world_knowledge"],
+                expected,
+            )
+            self.assertEqual(
+                world_variant["caption"]["world_knowledge"],
+                generated_value,
+            )
+        missing_world = json.loads(json.dumps(parsed))
+        del missing_world["caption"]["world_knowledge"]
+        normalized_missing, missing_errors = rewriter.normalize_generated_prompt(
+            missing_world,
+            3.0,
+        )
+        self.assertEqual(missing_errors, [])
+        self.assertEqual(
+            json.loads(normalized_missing)["caption"]["world_knowledge"],
+            [],
+        )
         missing_actions = json.loads(json.dumps(parsed))
         missing_actions["caption"]["prominent_elements"][0]["actions"] = []
         repaired, repair_count = rewriter.repair_missing_element_actions(

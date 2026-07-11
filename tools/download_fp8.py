@@ -10,7 +10,7 @@ import urllib.request
 from pathlib import Path
 
 
-RELEASE_VERSION = "v1.0.1"
+RELEASE_VERSION = "v1.0.2"
 BASE_URL = (
     "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/"
     f"releases/download/{RELEASE_VERSION}"

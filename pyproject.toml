@@ -1,6 +1,6 @@
 [project]
 name = "lingbot-video-1.3b-fp8"
-version = "1.0.1"
+version = "1.0.2"
 description = "Selective fused FP8 LingBot-Video Dense 1.3B runtime and workflows for ComfyUI"
 readme = "README.md"
 requires-python = ">=3.10"

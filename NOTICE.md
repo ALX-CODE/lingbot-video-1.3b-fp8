@@ -34,7 +34,7 @@ authoritative record of changes in this repository.
 
 ## Model asset
 
-`diffusion_pytorch_model.safetensors` in the `v1.0.1` GitHub Release is a
+`diffusion_pytorch_model.safetensors` in the `v1.0.2` GitHub Release is a
 quantized derivative of the official Dense 1.3B transformer. Recipients must
 retain the Apache-2.0 license and this attribution notice when redistributing
 that derivative. The release asset is intended for inference, and exact visual

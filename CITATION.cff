@@ -5,9 +5,9 @@ type: software
 authors:
   - name: "ALX-CODE"
 repository-code: "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8"
-url: "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/releases/tag/v1.0.1"
+url: "https://github.com/ALX-CODE/lingbot-video-1.3b-fp8/releases/tag/v1.0.2"
 license: Apache-2.0
-version: "1.0.1"
+version: "1.0.2"
 date-released: "2026-07-10"
 preferred-citation:
   type: article
